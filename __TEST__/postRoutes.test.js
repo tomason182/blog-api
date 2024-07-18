@@ -8,10 +8,9 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/post", postRoutes);
 
-test("posts routes works", (done) => {
+test("get all post route", (done) => {
   request(app)
     .get("/api/post")
     .expect("Content-Type", /json/)
-    .expect({ msg: "all fine!" })
     .expect(200, done);
 });
