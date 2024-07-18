@@ -16,6 +16,14 @@ test("get all post", (done) => {
     .expect(200, done);
 });
 
+test("get an specific post", (done) => {
+  request(app)
+    .get("/api/posts/post_id")
+    .expect("Content-Type", /json/)
+    .expect({ msg: "NOT IMPLEMENTED: Get specific post" })
+    .expect(200, done);
+});
+
 test("Post a new post", (done) => {
   request(app)
     .post("/api/posts")

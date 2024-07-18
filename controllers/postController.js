@@ -8,6 +8,13 @@ exports.post_all_published_get = asyncHandler(async (req, res) => {
   res.json({ msg: "NOT IMPLEMENTED: Get all post" });
 });
 
+// @desc    Get an specific post.
+// @route   GET /api/posts/:id
+// @access  Public
+exports.post_specific_get = asyncHandler(async (req, res) => {
+  res.json({ msg: "NOT IMPLEMENTED: Get specific post" });
+});
+
 // @desc    Post a new post
 // @route   POST /api/posts
 // @access  Private
