@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+const { errorHandler } = require("./middleware/errorMiddleware");
 const port = process.env.PORT || 3000;
 
 // Importing Routes
@@ -15,6 +16,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/users", userRoutes);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server started at port ${port}`);
