@@ -36,3 +36,14 @@ exports.mockedUsers = [
     admin: false,
   },
 ];
+
+exports.mockedComments = [
+  {
+    _id: "7895423",
+    author: "57783723",
+    post: "123456",
+    text: "This is a comment for the first post",
+    createdAt: "2024-07-17T20:15:40.078+00:00",
+    updatedAt: "2024-07-17T20:15:40.078+00:00",
+  },
+];
