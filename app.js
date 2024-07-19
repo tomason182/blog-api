@@ -1,7 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const { errorHandler } = require("./middleware/errorMiddleware");
+const connectDB = require("./config/db");
 const port = process.env.PORT || 3000;
+
+// Connect to database
+connectDB();
 
 // Importing Routes
 const postRoutes = require("./routes/postRoutes");

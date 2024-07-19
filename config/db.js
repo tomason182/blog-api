@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 mongoose.set("strictQuery", false);
-const mongoDb = process.env.MONGO_URL;
+const mongoDb =
+  process.env.NODE_ENV === "test"
+    ? process.env.TEST_MONGO_URL
+    : process.env.MONGO_URL;
 
 async function main() {
   try {
