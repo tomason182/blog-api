@@ -13,29 +13,25 @@ const express = require("express");
 const { findOne } = require("../models/user");
 const app = express();
 
-connectDB();
-
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/posts", postRoutes);
 
 app.use(errorHandler);
 
+beforeAll(async () => {
+  await connectDB();
+});
+afterAll(async () => {
+  await mongoose.connection.close();
+});
+
 beforeEach(async () => {
-  try {
-    await Post.deleteMany({});
-
-    const firstPost = new Post(mockedPosts[0]);
-    await firstPost.save();
-
-    const secondPost = new Post(mockedPosts[1]);
-    await secondPost.save();
-  } catch (err) {
-    console.log(err);
-  }
+  await Post.deleteMany({});
 });
 
 test("get all post", async () => {
+  await Post.insertMany(mockedPosts);
   const response = await request(app).get("/api/posts");
   expect(response.headers["content-type"]).toMatch(/json/);
   expect(response.status).toEqual(200);
@@ -53,7 +49,8 @@ describe("get an specific post", () => {
   });
 
   test("should retrieve specific post if id is found", async () => {
-    const somePost = await Post.findOne();
+    const somePost = new Post(mockedPosts[0]);
+    await somePost.save();
     const response = await request(app).get(`/api/posts/${somePost._id}`);
     expect(response.headers["content-type"]).toMatch(/json/);
     expect(response.status).toEqual(200);
@@ -69,12 +66,24 @@ describe("get an specific post", () => {
   });
 });
 
-test("Post a new post", (done) => {
-  request(app)
-    .post("/api/posts")
-    .expect("Content-Type", /json/)
-    .expect({ msg: "NOT IMPLEMENTED: Post new post" })
-    .expect(200, done);
+describe("Post a new post", () => {
+  test("Should throw an 400 error if post could not be posted", async () => {
+    const response = await request(app).post("/api/posts/");
+    expect(response.headers["content-type"]).toMatch(/json/);
+    expect(response.status).toEqual(400);
+    expect(response.body.message).toBe("Could not post the post");
+  });
+  test("Post should be published successfully if body is provided", async () => {
+    const response = await request(app).post("/api/posts").send({
+      title: "third post",
+      text: "Text for the third post",
+      author: "669ac0356f1dd528feb6f9c3",
+      status: "published",
+    });
+    expect(response.headers["content-type"]).toMatch(/json/);
+    expect(response.status).toEqual(200);
+    expect(response.body.message).toBe("Post published successfully");
+  });
 });
 
 test("Update a post", (done) => {
