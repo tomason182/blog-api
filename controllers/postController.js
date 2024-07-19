@@ -5,14 +5,23 @@ const asyncHandler = require("express-async-handler");
 // @route   GET /api/posts
 // @access  Public
 exports.post_all_published_get = asyncHandler(async (req, res) => {
-  res.json({ msg: "NOT IMPLEMENTED: Get all post" });
+  const allPost = await Post.find({});
+
+  res.status(200).json(allPost);
 });
 
 // @desc    Get an specific post.
 // @route   GET /api/posts/:id
 // @access  Public
 exports.post_specific_get = asyncHandler(async (req, res) => {
-  res.json({ msg: "NOT IMPLEMENTED: Get specific post" });
+  const post = await Post.findById(req.params.id);
+  console.log(post);
+  if (post === null) {
+    res.status(400);
+    throw new Error("Post not found");
+  } else {
+    res.status(200).json(post);
+  }
 });
 
 // @desc    Post a new post
