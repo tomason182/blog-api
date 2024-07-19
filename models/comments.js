@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { getMaxListeners } = require("./post");
 const Schema = mongoose.Schema;
 
 const CommentSchema = new Schema(
