@@ -16,3 +16,27 @@ test("Get list of all comments", (done) => {
     .expect({ msg: "NOT IMPLEMENTED: Get all comments" })
     .expect(200, done);
 });
+
+test("Create a new comment", (done) => {
+  request(app)
+    .post("/api/comments")
+    .expect("Content-Type", /json/)
+    .expect({ msg: "NOT IMPLEMENTED: Create a new comment" })
+    .expect(200, done);
+});
+
+test("Update a comment", (done) => {
+  request(app)
+    .put("/api/comments/comment_id")
+    .expect("Content-Type", /json/)
+    .expect({ msg: "NOT IMPLEMENTED: Update a comment" })
+    .expect(200, done);
+});
+
+test("Delete a comment", (done) => {
+  request(app)
+    .delete("/api/comments/comment_id")
+    .expect("Content-Type", /json/)
+    .expect({ msg: "NOT IMPLEMENTED: Delete a comment" })
+    .expect(200, done);
+});
