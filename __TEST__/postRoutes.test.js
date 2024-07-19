@@ -2,6 +2,7 @@ const postRoutes = require("../routes/postRoutes");
 
 const request = require("supertest");
 const express = require("express");
+const Post = require("../models/post");
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
