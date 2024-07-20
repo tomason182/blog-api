@@ -66,6 +66,75 @@ describe("Post API", () => {
         expect(response.status).toEqual(200);
         expect(response.body.message).toBe("Post published successfully");
       });
+      test("should thrown a error if status !== published or unpublished", async () => {
+        const response = await request(app).post("/api/posts").send({
+          title: "third post",
+          author: "669ac0356f1dd528feb6f9c3",
+          text: "Text for the third post",
+          status: "not valid status",
+        });
+        expect(response.headers["content-type"]).toMatch(/json/);
+        expect(response.status).toEqual(400);
+        expect(response.body.message).toBe("Could not post the post");
+      });
+    });
+
+    describe("Update a post", () => {
+      test("Should throw an error if post id is not a valid MongoID", async () => {
+        const response = await request(app).put("/api/posts/223");
+        expect(response.headers["content-type"]).toMatch(/json/);
+        expect(response.status).toEqual(400);
+      });
+
+      test("should throw a post not found error if post don't exists", async () => {
+        await Post.insertMany(mockedPosts);
+        const response = await request(app)
+          .put("/api/posts/669ae72ef120fc69aa860914")
+          .send({
+            title: "Test title",
+            author: "669ac0356f1dd528feb6f9c3",
+            text: "test text",
+            status: "published",
+          });
+        expect(response.headers["content-type"]).toMatch(/json/);
+        expect(response.status).toEqual(400);
+        expect(response.body.message).toMatch(
+          /Could not find the post with id:/
+        );
+      });
+
+      test("Shoudl update a post if body is correctly provided and post exist", async () => {
+        await Post.insertMany(mockedPosts);
+        const post = await Post.findOne();
+        const response = await request(app).put(`/api/posts/${post._id}`).send({
+          title: "Modified title",
+          author: "669ac0356f1dd528feb6f9c3",
+          text: "Modified text",
+          status: "unpublished",
+        });
+        expect(response.headers["content-type"]).toMatch(/json/);
+        expect(response.status).toEqual(200);
+        expect(response.body.message).toMatch(/Post updated successfully/);
+      });
+    });
+
+    describe("DELETE A POST", () => {
+      test("should throw an error if post id is not valid", async () => {
+        const response = await request(app).delete("/api/posts/223");
+        expect(response.headers["content-type"]).toMatch(/json/);
+        expect(response.status).toEqual(400);
+      });
+
+      test("should retrieve a successful message if post id deleted", async () => {
+        await Post.insertMany(mockedPosts);
+        const post = await Post.findOne();
+        const response = await request(app).delete(`/api/posts/${post._id}`);
+        expect(response.headers["content-type"]).toMatch(/json/);
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe(
+          `post ${post._id} deleted successfully`
+        );
+      });
     });
   });
 });
