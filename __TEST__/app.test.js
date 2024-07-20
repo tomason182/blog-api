@@ -137,4 +137,20 @@ describe("Post API", () => {
       });
     });
   });
+
+  describe("Comments API", () => {
+    describe("Create a comment", () => {
+      test("should throw an error if comments fields are not filled", async () => {
+        const response = (await request(app).post("/api/comments")).send({
+          title: "",
+          author: "",
+          post: "",
+          text: "",
+        });
+        expect(response.headers["content-type"]).toMatch(/json/);
+        expect(response.status).toBe(400);
+        expect(response.body.message).toBe("Invalid comments fields");
+      });
+    });
+  });
 });
