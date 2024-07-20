@@ -2,13 +2,22 @@ const Post = require("../models/post");
 const asyncHandler = require("express-async-handler");
 const { body, param, validationResult } = require("express-validator");
 
-// @desc    Get all posts w/ status published
+// @desc    Get all posts
 // @route   GET /api/posts
-// @access  Public
-exports.post_all_published_get = asyncHandler(async (req, res) => {
+// @access  Private
+exports.post_all_get = asyncHandler(async (req, res) => {
   const allPost = await Post.find({});
 
   res.status(200).json(allPost);
+});
+
+// @desc    Get all posts w/ status published
+// @route   GET /api/posts/published
+// @access  Public
+exports.post_all_published_get = asyncHandler(async (req, res) => {
+  const publishedPost = await Post.find({ status: "published" });
+
+  res.status(200).json(publishedPost);
 });
 
 // @desc    Get an specific post.

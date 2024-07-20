@@ -4,7 +4,10 @@ const router = express.Router();
 const postController = require("../controllers/postController");
 
 // List of all post
-router.get("/", postController.post_all_published_get);
+router.get("/", postController.post_all_get);
+
+// List of published post only
+router.get("/published", postController.post_all_published_get);
 
 // Get an specific post
 router.get("/:id", postController.post_specific_get);
