@@ -1,13 +1,14 @@
 const Comment = require("../models/comments");
 const Post = require("../models/post");
 const asyncHandler = require("express-async-handler");
-const { body, validationResult } = require("express-validator");
+const { body, param, validationResult } = require("express-validator");
 
 // @desc    Get all comments
 // @route   GET /api/comments
 // @access  Private
 exports.comments_all_get = asyncHandler(async (req, res) => {
-  res.json({ msg: "NOT IMPLEMENTED: Get all comments" });
+  const allComments = await Comment.find({});
+  res.status(200).json(allComments);
 });
 
 // @desc    add a new comment
@@ -70,6 +71,26 @@ exports.comments_update_put = asyncHandler(async (req, res) => {
 // @desc    Delete a comment
 // @route   DELETE /api/comments/:id
 // @access  Private
-exports.comments_delete = asyncHandler(async (req, res) => {
-  res.json({ msg: "NOT IMPLEMENTED: Delete a comment" });
-});
+exports.comments_delete = [
+  param("id")
+    .trim()
+    .escape()
+    .isMongoId()
+    .withMessage("id param is not a valid mongo id"),
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      res.status(400);
+      res.json(errors.array());
+      return;
+    }
+
+    const commentToDelete = await Comment.findByIdAndDelete(req.params.id);
+    if (commentToDelete === null) {
+      res.status(200).json({ message: "Can not find the comment to delete" });
+    } else {
+      res.status(200).json({ message: "Comments successfully deleted" });
+    }
+  }),
+];

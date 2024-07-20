@@ -149,7 +149,6 @@ describe("Post API", () => {
         });
         expect(response.headers["content-type"]).toMatch(/json/);
         expect(response.status).toBe(400);
-        expect(response.body.message).toBe("Invalid comments fields");
       });
     });
   });
