@@ -8,17 +8,12 @@ opt.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 opt.secretOrKey = process.env.JWT_SECRET;
 
 const strategy = new Strategy(opt, function (payload, done) {
-  User.findOne({ id: payload.sub }, function (err, user) {
-    if (err) {
-      return done(err, false);
-    }
+  const user = User.findOne({ id: payload.sub });
+  if (user === null) {
+    return done(null, false);
+  }
 
-    if (user) {
-      return done(null, user);
-    } else {
-      return done(null, false);
-    }
-  });
+  return done(null, user);
 });
 
 module.exports = (passport) => {

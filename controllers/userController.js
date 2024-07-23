@@ -19,8 +19,8 @@ exports.users_one_get = asyncHandler(async (req, res) => {
   res.json({ msg: "NOT IMPLEMENTED: Get specific user" });
 });
 
-// @desc    Create a users
-// @route   POST /api/users/
+// @desc    Register a users
+// @route   POST /api/users/register
 // @access  Private
 exports.users_create_post = [
   body("name")
@@ -28,7 +28,7 @@ exports.users_create_post = [
     .escape()
     .isLength({ min: 3, max: 50 })
     .withMessage("name must be 3 to 50 characters"),
-  body("email").trim().escape().isEmail().withMessage("Not a valid email"),
+  body("username").trim().escape().isEmail().withMessage("Not a valid email"),
   body("password")
     .trim()
     .escape()
@@ -36,8 +36,6 @@ exports.users_create_post = [
     .withMessage("password should contain at lease 12 characters"),
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
-
-    console.log(errors.isEmpty());
 
     if (!errors.isEmpty()) {
       return res.status(400).json(errors.array());
@@ -63,16 +61,17 @@ exports.users_create_post = [
 
         const user = new User({
           name: req.body.name,
-          email: req.body.email,
-          hashedPassword: hashedPassword,
+          username: req.body.username,
+          hashedPassword: hashedPassword.toString("hex"),
           salt: salt,
         });
 
+        console.log(user);
         try {
           await user.save();
           return res.status(200).json({ message: "User created successfully" });
         } catch (err) {
-          return next(err);
+          throw new Error(err);
         }
       }
     );
@@ -101,7 +100,7 @@ exports.user_login_post = asyncHandler(async (req, res) => {
         return next(err);
       }
 
-      if (hashedPassword !== user.hashedPassword) {
+      if (hashedPassword.toString("hex") !== user.hashedPassword) {
         return res
           .status(401)
           .json({ message: "Invalid username or password" });
