@@ -86,8 +86,12 @@ exports.post_update_put = [
     .isMongoId()
     .withMessage("Is not a valid mongo Id"),
   body("title").trim().escape().isLength({ min: 3 }),
-  body("text").trim().escape().isLength({ min: 3 }),
-  body("author").trim().escape().isLength({ min: 3 }),
+  body("content").trim().escape().isLength({ min: 3 }),
+  body("status")
+    .trim()
+    .escape()
+    .isIn(["published", "unpublished"])
+    .withMessage("Status must be published or unpublished"),
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);
 
@@ -95,21 +99,26 @@ exports.post_update_put = [
       res.status(400).json({ message: "Invalid body values" });
       return;
     }
-    console.log(req.params.id);
-    const post = await Post.findById(req.params.id);
 
-    if (post !== null) {
-      (post.title = req.body.title),
-        (post.text = req.body.text),
-        (post.author = req.body.author),
-        (post.status = req.body.status);
+    const filter = { _id: req.params.id };
+    const update = {
+      title: req.body.title,
+      content: req.body.content,
+      author: req.user._id,
+      status: req.body.status,
+    };
 
-      await post.save();
+    try {
+      const post = await Post.findOneAndUpdate(filter, update, { new: true });
+      if (post === null) {
+        res.status(404);
+        throw new Error("Post not found");
+      }
       res.status(200).json({ message: "Post updated successfully" });
+    } catch (err) {
+      res.status(400);
+      throw new Error(`The was an error updating the post: ${err}`);
     }
-
-    res.status(400);
-    throw new Error(`Could not find the post with id: ${req.params.id}`);
   }),
 ];
 
