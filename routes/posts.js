@@ -5,7 +5,7 @@ const router = express.Router();
 const postController = require("../controllers/postController");
 
 // List of all post
-router.get("/", postController.post_all_get);
+router.get("/", authMiddleware, postController.post_all_get);
 
 // List of published post only
 router.get("/published", postController.post_all_published_get);

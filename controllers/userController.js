@@ -4,6 +4,8 @@ const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const crypto = require("node:crypto");
 const jwt = require("jsonwebtoken");
+const util = require("node:util");
+const pbkdf2 = util.promisify(crypto.pbkdf2);
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -84,36 +86,37 @@ exports.users_create_post = [
 // @access  Public
 exports.user_login_post = asyncHandler(async (req, res, next) => {
   const { username, password } = req.body;
+  console.log(username);
+  console.log(password);
   const user = await User.findOne({ username });
-
   if (user === null) {
-    return res.status(401).json({ message: "Invalid username or password" });
+    res.status(401);
+    throw new Error("Invalid username or password");
   }
 
-  crypto.pbkdf2(
-    password,
-    user.salt,
-    100000,
-    64,
-    "sha512",
-    async (err, hashedPassword) => {
-      if (err) {
-        return next(err);
-      }
-
-      if (hashedPassword.toString("hex") !== user.hashedPassword) {
-        return res
-          .status(401)
-          .json({ message: "Invalid username or password" });
-      }
-
-      const payload = { sub: user._id };
-      const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-      return res.status(200).json({ token });
+  try {
+    const hashedPassword = await pbkdf2(
+      password,
+      user.salt,
+      100000,
+      64,
+      "sha512"
+    );
+    console.log();
+    if (hashedPassword.toString("hex") !== user.hashedPassword) {
+      res.status(401);
+      throw new Error("Invalid username or password");
     }
-  );
+
+    const payload = { sub: user._id };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    return res.status(200).json({ token });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // @desc    User log out
