@@ -9,7 +9,8 @@ const jwt = require("jsonwebtoken");
 // @route   GET /api/users
 // @access  Private
 exports.users_all_get = asyncHandler(async (req, res) => {
-  res.json({ msg: "NOT IMPLEMENTED: Get all users" });
+  const { _id, name, username } = req.user;
+  res.json({ msg: `Name: ${name}, id: ${_id}, username: ${username}` });
 });
 
 // @desc    Get one users
