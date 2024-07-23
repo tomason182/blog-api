@@ -30,7 +30,7 @@ exports.users_create_post = [
   body("password")
     .trim()
     .escape()
-    .length({ min: 12 })
+    .isLength({ min: 12 })
     .withMessage("password should contain at lease 12 characters"),
   asyncHandler(async (req, res) => {
     const errors = validationResult(req);

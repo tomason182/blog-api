@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const authMiddleware = require("../middleware/authMiddleware");
 
 const userController = require("../controllers/userController");
 
 // Get all users
-router.get("/", userController.users_all_get);
+router.get("/", authMiddleware, userController.users_all_get);
 
 // Get an specific user
 router.get("/:id", userController.users_one_get);
