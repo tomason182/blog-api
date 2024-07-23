@@ -5,7 +5,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const passport = require("passport");
-const { errorHandler } = require("./middleware/errorMiddleware");
+const { errorHandler, notFound } = require("./middleware/errorMiddleware");
 
 const postsRouter = require("./routes/posts");
 const usersRouter = require("./routes/users");
@@ -27,6 +27,7 @@ app.use("/api/posts", postsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/comments", commentsRouter);
 
+app.use(notFound);
 app.use(errorHandler);
 
 module.exports = app;
