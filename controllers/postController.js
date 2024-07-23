@@ -33,13 +33,20 @@ exports.post_specific_get = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Post a new post
+// @desc    Create a new post
 // @route   POST /api/posts
 // @access  Private
 exports.post_new_post = [
-  body("title").trim().escape().isLength({ min: 3 }),
-  body("text").trim().escape().isLength({ min: 3 }),
-  body("author").trim().escape().isLength({ min: 3 }),
+  body("title")
+    .trim()
+    .escape()
+    .isLength({ min: 3 })
+    .withMessage("Title is required. Min length 3"),
+  body("content")
+    .trim()
+    .escape()
+    .isLength({ min: 3 })
+    .withMessage("Text is required. Min length 3"),
   body("status")
     .trim()
     .escape()
@@ -49,15 +56,17 @@ exports.post_new_post = [
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      res.status(400);
-      throw new Error(`Could not post the post`);
+      return res.status(400).json(errors.array());
     }
 
+    const { title, content, status } = req.body;
+    const author = req.user._id;
+
     const post = new Post({
-      title: req.body.title,
-      author: req.body.author,
-      text: req.body.text,
-      status: req.body.status,
+      title: title,
+      content: content,
+      author: author,
+      status: status,
     });
 
     await post.save();

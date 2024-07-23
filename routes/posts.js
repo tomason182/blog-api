@@ -1,3 +1,4 @@
+const authMiddleware = require("../middleware/authMiddleware");
 const express = require("express");
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.get("/published", postController.post_all_published_get);
 router.get("/:id", postController.post_specific_get);
 
 // create a new post
-router.post("/new", postController.post_new_post);
+router.post("/new", authMiddleware, postController.post_new_post);
 
 // Update a post
 router.put("/:id", postController.post_update_put);
