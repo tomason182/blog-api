@@ -18,7 +18,11 @@ router.put("/:id", userController.users_update_put);
 
 // Delete a user
 router.delete("/:id", userController.users_delete);
-module.exports = router;
 
 // User Log In
 router.post("/login", userController.user_login_post);
+
+// User Log out
+router.post("/logout", authMiddleware, userController.user_logout_post);
+
+module.exports = router;

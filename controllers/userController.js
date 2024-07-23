@@ -82,7 +82,7 @@ exports.users_create_post = [
 // @desc    Log in a user
 // @route   POST /api/users/login
 // @access  Public
-exports.user_login_post = asyncHandler(async (req, res) => {
+exports.user_login_post = asyncHandler(async (req, res, next) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username });
 
@@ -114,6 +114,14 @@ exports.user_login_post = asyncHandler(async (req, res) => {
       return res.status(200).json({ token });
     }
   );
+});
+
+// @desc    User log out
+// @route   POST /api/users/logout
+// @access  Private
+exports.user_logout_post = asyncHandler(async (req, res) => {
+  // Client should remove toke in front-end
+  res.status(200).json({ message: "User logged out" });
 });
 
 // @desc    Update a user
