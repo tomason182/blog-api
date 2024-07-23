@@ -1,7 +1,9 @@
+require("dotenv").config();
 const User = require("../models/user");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
 const crypto = require("node:crypto");
+const jwt = require("jsonwebtoken");
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -76,6 +78,43 @@ exports.users_create_post = [
     );
   }),
 ];
+
+// @desc    Log in a user
+// @route   POST /api/users/login
+// @access  Public
+exports.user_login_post = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+
+  if (user === null) {
+    return res.status(401).json({ message: "Invalid username or password" });
+  }
+
+  crypto.pbkdf2(
+    password,
+    user.salt,
+    100000,
+    64,
+    "sha512",
+    async (err, hashedPassword) => {
+      if (err) {
+        return next(err);
+      }
+
+      if (hashedPassword !== user.hashedPassword) {
+        return res
+          .status(401)
+          .json({ message: "Invalid username or password" });
+      }
+
+      const payload = { sub: user._id };
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+      return res.status(200).json({ token });
+    }
+  );
+});
 
 // @desc    Update a user
 // @route   PUT /api/users/:id
