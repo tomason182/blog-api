@@ -5,6 +5,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const passport = require("passport");
+const cors = require("cors");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
 
 const postsRouter = require("./routes/posts");
@@ -16,6 +17,7 @@ require("./config/passport")(passport);
 
 connectDB();
 
+app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
