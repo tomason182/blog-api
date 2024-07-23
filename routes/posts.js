@@ -12,8 +12,8 @@ router.get("/published", postController.post_all_published_get);
 // Get an specific post
 router.get("/:id", postController.post_specific_get);
 
-// Post a new post
-router.post("/", postController.post_new_post);
+// create a new post
+router.post("/new", postController.post_new_post);
 
 // Update a post
 router.put("/:id", postController.post_update_put);
